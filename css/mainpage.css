@@ -1,0 +1,109 @@
+@font-face {
+    font-family: mainPageFont;
+    src: url(../fonts/THSarabunNew.ttf);
+}
+/*div {
+    font-family: mainPageFont;
+    font-size : 20px;
+}*/
+body
+{
+    background-color: #F9F6F6;
+}
+.print-page .row
+{
+  margin-bottom: 10px;
+}
+.col-centered{
+    float: none;
+    margin: 0 auto;
+}
+.course-detail
+{
+  background-color: #DFF3F8;
+}
+.contact-pic
+{
+  margin-left: -17px;
+}
+ul
+{
+list-style-type: none;
+}
+
+.side-menu
+{
+    padding: 0px;
+
+}
+.side-menu .navbar-header {
+  width: 100%;
+  border-bottom: 1px solid #E7E7E7;
+  padding: 2px;
+  text-align: center;
+  background-color: #17A7EA;
+  font-weight: bold;
+  color: #FFFFFF;
+
+}
+.side-menu .navbar-nav li {
+  display: block;
+  width: 100%;
+  border-bottom: 1px solid #E7E7E7;
+}
+.option-register
+{
+    margin-top: 40px;
+}
+.container
+{
+   /* font-family: mainPageFont;*/
+    margin: 0 auto;
+    max-width: 1000px;
+}
+.user-detail
+{
+  color: #777;
+  padding-left: 10px;
+}
+.head-web
+{
+    background-image: url("../photo/BANNER1.jpg");
+    min-height: 200px;
+}
+.footer-web
+{
+  background-image: url("../photo/Wfoot.jpg");
+    min-height: 77px;
+}
+.text-title
+{
+    font-family: mainPageFont;
+    color: white;
+    font-weight: bold;
+    font-size: 32px;
+}
+.eng-navbar
+{
+    border-radius: 0px;
+    background-color: #FBF15D;
+    border-width: 0px;
+    height: 30px;
+    font-weight: bold;
+    color: white;
+}
+.navbar-default .navbar-nav > li > a {
+   color: #0A0101; 
+}
+#eng-nav
+{
+  color: #0A0101; 
+}
+li.active
+{
+    background-color: #E0BDC4;
+}
+.navbar-default .navbar-nav > .active > a, .navbar-default .navbar-nav > .active > a:hover, .navbar-default .navbar-nav > .active > a:focus {
+  color: #FEFDFD;
+  background-color: #C6D1E2;
+}
