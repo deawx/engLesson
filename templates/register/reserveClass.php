@@ -17,6 +17,8 @@
                              <span class="label label-danger"><?=$schedule['booking_status']?></span>
                         <?php elseif( $schedule['booking_status'] == 'Study'):?>
                              <span class="label label-success"><?=$schedule['booking_status']?></span>
+                             <?php elseif( $schedule['booking_status'] == 'NotStudy'):?>
+                             <span class="label label-danger"><?=$schedule['booking_status']?></span>
                         <?php else:?>
                             <span class="label label-info"><?=$schedule['booking_status']?></span>
                             <span class="label label-info">ที่นั่ง <?=$schedule['seat_name']?></span>

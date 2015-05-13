@@ -36,7 +36,7 @@
                     <span><strong>ได้คะแนน <?=$course['score']?> คะแนน</strong></span>
               <?php endif; ?>
               <?php if($course['status'] =='NotPassTest'):?>
-                   <span class="label label-danger">ไม่ผ่านหลักสูตร</span>
+                   <span class="label label-danger">ไม่ผ่าน</span>
                    <span><strong>ได้คะแนน <?=$course['score']?> คะแนน</strong></span>
               <?php endif; ?>
             </span>

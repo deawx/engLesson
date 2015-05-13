@@ -113,6 +113,7 @@ session_start();
     $app->get('/deleteQuestion', 'deleteQuestion');
     $app->get('/deleteExam', 'deleteExam');
     $app->get('/contactUs', 'contactUs');
+    $app->get('/sendMail', 'sendMail');
 
     $app->get('/reportIncomeMain'  , 'reportIncomeMain');
     $app->get('/reportPopularMain' , 'reportPopularMain');
@@ -342,6 +343,22 @@ session_start();
             'userID'   => $_SESSION['loginUser'],
             'courseID' => $courseID
         ));
+         $presentDate = date('Y-m-d');
+        foreach ($courseClass->course as $key => $value) 
+        {
+            $scheduleDataIsPassed = $presentDate > $value['schedule_date'];
+            $studentAlreadyBooking = !empty($value['booking_id']);
+            $studentIsNotComeToClass = $value['booking_id'] !='Study';
+           
+            if($studentAlreadyBooking &&  $studentIsNotComeToClass  && $scheduleDataIsPassed )
+            {
+                $sql="UPDATE booking SET booking_status='NotStudy' 
+                WHERE booking_id='{$value['booking_id']}'";
+                 $query = $app->db->prepare($sql);
+                 $query->execute();
+                // echo $sql;
+            }
+        }
         $courseClass->setUserCourseList();
         $page = 'register/reserveClass.php';
         $data = array( 'course'  => $courseClass->course );
@@ -1757,5 +1774,10 @@ session_start();
         $app->render('admin/studentVideoSchedule.php',$data=array(
             'course' => $videoCourse
         ));
+    }
+    function sendMail()
+    {
+      
+
     }
 

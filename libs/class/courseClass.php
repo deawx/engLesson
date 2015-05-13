@@ -310,7 +310,7 @@
             $this->sql="SELECT 
                 r.file_name,r.register_id,r.`status`,
                 r.register_date,r.register_end_date,r.pay_date,
-                s.firstname,s.lastname,
+                s.firstname,s.lastname,s.email,
                 {$this->courseField}
                 FROM register r 
                 INNER JOIN course c ON c.course_id=r.course_id

@@ -24,12 +24,8 @@
        <div class="row">
          <nav class="navbar navbar-default eng-navbar ">
           <div class="container-fluid">
-            <div class="navbar-header">
-              <a id="eng-nav" class="navbar-brand" href="mainCourse">หน้าแรก</a>
-            </div>
-            <div>
-
               <ul class="nav navbar-nav">
+                <li> <a id="eng-nav"  href="mainCourse">หน้าแรก</a></li>
                 <li class="<?=(isset($_GET['menu']) && $_GET['menu']=='showCourse')? 'active':'' ;?>">
                   <a href="/engLesson/showCourse?menu=showCourse">แสดงตารางเรียน</a></li>
                 <li class="<?=(isset($_GET['menu']) && $_GET['menu']=='exam')? 'active':'' ;?>">
@@ -42,9 +38,9 @@
                 <li class="<?=(isset($_GET['menu']) && $_GET['menu']=='admin')? 'active':'' ;?>">
                   <a href="/engLesson/admin?menu=admin">เข้าสู่ระบบ</a></li>
               </ul>
-            </div>
           </div>
         </nav>
+      
       </div>
       <section>
       <div class="row">
@@ -94,7 +90,7 @@
                         <li  class="<?=($request =='showTeacherSchedule')? 'active':'' ;?>">
                           <a href="/engLesson/showTeacherSchedule"><span class="glyphicon glyphicon-send"> </span> เช็คชื่อนักเรียน</a></li>
                          <?php endif; ?>
-                        <?php if($_SESSION['userDetail']['user_type'] == 'executive'):?>
+                        <?php if($_SESSION['userDetail']['user_type'] == 'executive' || $_SESSION['userDetail']['user_type']=='Teacher'):?>
                         <li class="active"><a href="/engLesson/report">
                           <span class="glyphicon glyphicon-plane"></span>รายงาน</a></li>
                         <?php endif; ?>
