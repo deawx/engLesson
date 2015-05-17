@@ -1291,7 +1291,8 @@ session_start();
         $courseClass= new Course($app->db);
         $monthName='มกราคม - ธันวาคม';
         $year = 'ทั้งหมด';
-        if(!empty($_GET{'month'}))
+
+        if(!empty($_POST['month']))
         {
             $monthList = Utility::getMonthList();
             $monthName = $monthList[ $_POST['month'] ]['Name'];
@@ -1315,7 +1316,7 @@ session_start();
         $courseClass= new Course($app->db);
         $monthName='มกราคม - ธันวาคม';
         $year = 'ทั้งหมด';
-        if(!empty($_GET{'month'}))
+       if(!empty($_POST['month']))
         {
             $monthList = Utility::getMonthList();
             $monthName = $monthList[ $_POST['month'] ]['Name'];

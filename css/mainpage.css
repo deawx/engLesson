@@ -97,7 +97,7 @@ list-style-type: none;
   
   }
 @media (min-width: 768px){
-  .navbar-default .navbar-nav > li > a, .navbar-brand 
+  .eng-navbar .navbar-nav > li > a, .navbar-brand 
   {
     height: 30px;
   }
