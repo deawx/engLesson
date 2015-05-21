@@ -52,6 +52,7 @@ session_start();
     $app->get('/roomLive', 'showRoomLive');
 
     $app->get('/showCourse', 'showCoursePage');
+    $app->get('/approveUser', 'approveUser');
      $app->post('/register', 'registerCourse');
     $app->get('/register', 'showCourseList');
     $app->get('/reserve', 'showClassList');
@@ -193,6 +194,14 @@ session_start();
             $query->execute();
         }
         $app->redirect('../engLesson/studentMenu');
+    }
+    function approveUser()
+    {
+        $sql="UPDATE studente SET status='Y' WHERE user_id=:userID";
+          $query = $app->db->prepare($sql);
+            $query->bindParam(':userID', $_GET['userID']);
+            $query->execute();
+         $app->redirect('../engLesson/studentMenu');
     }
     function signUpPretestExam()
     {
@@ -400,7 +409,7 @@ session_start();
                         register_date,register_end_date) 
                     VALUES (:userID, :courseID,'Pending' ,
                         CURDATE(),
-                        DATE_ADD(curdate(), INTERVAL 3 DAY) )");
+                        DATE_ADD(curdate(), INTERVAL 1 DAY) )");
             $query->bindParam(':userID', $post['userID']);
             $query->bindParam(':courseID', $post['courseID']);
             $query->execute();
@@ -1780,12 +1789,14 @@ session_start();
     }
     function sendMail()
     {
-      
+       ini_set('display_errors', 1);
+       error_reporting(E_ALL);
         $mail = new PHPMailer;
         // exit;
         $mail->isSMTP();                   
                            // Set mailer to use SMTP
         $mail->Host = 'smtp.gmail.com';  // Specify main and backup SMTP servers
+         $mail->SMTPDebug = 2;
         $mail->SMTPAuth = true;                               // Enable SMTP authentication
         $mail->Username = 'unplugged2d@gmail.com';                 // SMTP username
         $mail->Password = 'halflink';                           // SMTP password
@@ -1805,7 +1816,8 @@ session_start();
 
         $mail->Subject = 'Here is the subject';
         $mail->Body    = 'This is the HTML message body <b>in bold!</b>';
-        $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
+        
+        // $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
 //         echo '<pre>';
 // var_dump($mail);exit;
         if(!$mail->send()) {
