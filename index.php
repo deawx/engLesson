@@ -27,6 +27,18 @@ session_start();
     //database connect
     $app->db = $dbClass->connect; 
     $app->db->exec("set names utf8");
+    //set Email
+    $app->mail = new PHPMailer(); // create a new object
+    $app->mail->IsSMTP(); // enable SMTP
+    $app->mail->SMTPDebug = 2; // debugging: 1 = errors and messages, 2 = messages only
+    $app->mail->SMTPAuth = true; // authentication enabled
+    $app->mail->SMTPSecure = 'ssl'; // secure transfer enabled REQUIRED for GMail
+    $app->mail->Host = "smtp.gmail.com";
+    $app->mail->Port = 465; // or 587
+    $app->mail->IsHTML(true);
+    $app->mail->Username = "unplugged2d@gmail.com";
+    $app->mail->Password = "halflink";
+    $app->mail->SetFrom("unplugged2d@gmail.com");
 
     //set view template folder
     $view = $app->view();
@@ -164,8 +176,9 @@ session_start();
     {
         if( empty( $session['loginUser'] ) )
         {
+            $data['username'] ='Insert New Login';
             // $app->render('webs/studentLogin.php',array('username'=> 'Insert New Login'));
-            $app->render('admin/adminLogin.php',array('username'=> 'Insert New Login'));
+            $app->render('admin/adminLogin.php',$data);
         }
         else
         {
@@ -197,11 +210,12 @@ session_start();
     }
     function approveUser()
     {
-        $sql="UPDATE studente SET status='Y' WHERE user_id=:userID";
+        $app       = Slim::getInstance();
+        $sql="UPDATE student SET status='Y' WHERE user_id=:userID";
           $query = $app->db->prepare($sql);
             $query->bindParam(':userID', $_GET['userID']);
             $query->execute();
-         $app->redirect('../engLesson/studentMenu');
+         $app->redirect('../engLesson/studentMenu?status=approved');
     }
     function signUpPretestExam()
     {
@@ -493,7 +507,12 @@ session_start();
     {
          $app = Slim::getInstance();
          $page ="webs/studentMenu.php";
-        $data=array();
+         $data=array();
+         if(!empty($_GET['status']))
+        {
+            $data=$_GET;
+        }
+        
           checkUserIsLogined($app,$_SESSION,$page,$data);
     }
     function updateStudentData()
@@ -501,6 +520,14 @@ session_start();
         $app = Slim::getInstance();
         $request = $app->request();
         $post = $request->post();
+
+        $body ="<h1>คลิ๊กเพื่อยืนยัน user เข้าใช้งาน</h1><a href='http://localhost/engLesson/approveUser?userID={$post['userID']}'>Approve</a>";
+        Utility::sendMail($app->mail,array(
+            'Subject' => 'Approve your account',
+            'Body'    => $body,
+            'Address' => $post['email']
+        )); 
+        // exit;
         // echo '<pre>';print_r( $post );echo '</pre>';exit;
         $query = $app->db->prepare("UPDATE student SET 
             username=:username ,
@@ -515,19 +542,20 @@ session_start();
         $query->bindParam(':userID', $post['userID']);
         $query->execute();
 
+        
+         $app->redirect('../engLesson/studentMenu?status=notApprove');
+        // $_SESSION['loginUser'] = $post['userID'];
+        // $userClass= new User($app->db);
+        //     $userClass->userType='student';
+        //     $userClass->userID=$_SESSION['loginUser'];
+        //     $userClass->getUserData();
+        //     $_SESSION['userDetail'] =$userClass->user;
 
-        $_SESSION['loginUser'] = $post['userID'];
-        $userClass= new User($app->db);
-            $userClass->userType='student';
-            $userClass->userID=$_SESSION['loginUser'];
-            $userClass->getUserData();
-            $_SESSION['userDetail'] =$userClass->user;
-        $page ="webs/studentMenu.php";
-        $data=array(
-            'userID' => $post['userID']
-        );
-
-        checkUserIsLogined($app,$_SESSION,$page,$data);
+        // $page ="webs/studentMenu.php";
+        // $data=array(
+        //     'userID' => $post['userID']
+        // );
+        // checkUserIsLogined($app,$_SESSION,$page,$data);
     } 
     function checkPretestScore()
     {
@@ -605,7 +633,8 @@ session_start();
         $sql= "SELECT COUNT(*) count,username ,user_id
                 FROM student 
                 WHERE username='{$username}' 
-                AND password=md5('{$password}')";
+                AND password=md5('{$password}') 
+                AND status='Y";
 
         $query = $app->db->prepare($sql);
         $query->execute();
@@ -1793,7 +1822,7 @@ session_start();
         $mail->IsSMTP(); // enable SMTP
         $mail->SMTPDebug = 2; // debugging: 1 = errors and messages, 2 = messages only
         $mail->SMTPAuth = true; // authentication enabled
-        $mail->SMTPSecure = 'tls'; // secure transfer enabled REQUIRED for GMail
+        $mail->SMTPSecure = 'ssl'; // secure transfer enabled REQUIRED for GMail
         $mail->Host = "smtp.gmail.com";
         $mail->Port = 465; // or 587
         $mail->IsHTML(true);
@@ -1812,4 +1841,5 @@ session_start();
             echo "Message has been sent";
             }
     }
+
 

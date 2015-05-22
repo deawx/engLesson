@@ -64,4 +64,18 @@ class Utility
         }
         return $data;
     }
+    public static function sendMail($mail,$filter)
+    {
+        $mail->Subject = $filter['Subject'];
+        $mail->Body = $filter['Body'];
+        $mail->AddAddress($filter['Address']);
+         if(!$mail->Send())
+        {
+        // echo "Mailer Error: " . $mail->ErrorInfo;
+        }
+        else
+        {
+        // echo "Message has been sent";
+        }
+    }
 }
