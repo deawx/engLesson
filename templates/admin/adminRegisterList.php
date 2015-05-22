@@ -31,8 +31,7 @@
                     <?php if($course['status'] !='Confirmed'):?>
                     <td> <a href="updatePaymentStatus/<?=$course['register_id']?>/Confirmed" role="button" class="btn btn-success">ยืนยันการสมัคร</a></td>
                     <td> <a href="updatePaymentStatus/<?=$course['register_id']?>/Cancel" role="button" class="btn btn-danger">ยกเลิกการสมัคร</a></td>
-                    <?php else : ?>
-                     <td> <a href="mailto:<?=$course['email']?>?Subject=ยืนยันการสมัครเรียน&body=<?=$body?>" role="button" class="btn btn-info">ส่งเมล์ยืนยันการชำระเงิน</a></td>
+
                     <?php endif; ?>
                 </tr>
             <?php endforeach; ?>

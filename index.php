@@ -1300,7 +1300,11 @@ session_start();
     {
         $app = Slim::getInstance();
         $examClass =new Exam($app->db);
-
+        $courseClass= new Course($app->db);
+        $courseClass->getDetailFromRegisterID(array(
+            'registerID' => $registerID
+        ));
+        // echo '<pre>';print_r($courseClass->course);echo '</pre>';exit;
         $sql="UPDATE register 
                 SET status=:status
                 WHERE register_id=:registerID";
@@ -1308,6 +1312,16 @@ session_start();
         $query->bindParam(':registerID' , $registerID);
         $query->bindParam(':status'     , $status);
         $query->execute();
+        if($status=='Confirmed')
+        {
+             $body = "Already Comfirm your payment course ".$courseClass->course['course_name'].' you can reserve for your seat now';
+            Utility::sendMail($app->mail,array(
+                'Subject' => 'Update Your Payment Status',
+                'Body'    => $body,
+                'Address' => $courseClass->course['email']
+            )); 
+        }
+
         $app->redirect('/engLesson/showRegisterList');
     }
     function reportPostExam()

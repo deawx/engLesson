@@ -95,6 +95,21 @@
             $query->execute();
             $this->course = $query->fetchAll(PDO::FETCH_ASSOC);
         }
+
+        public function getDetailFromRegisterID($filter)
+        {
+            $this->sql="SELECT  
+                    {$this->courseField},
+                    {$this->registerField},
+                    {$this->userField}
+                    FROM register r 
+                    INNER JOIN course c ON c.course_id=r.course_id 
+                    INNER JOIN student u ON u.user_id=r.user_id
+                    WHERE r.register_id='{$filter['registerID']}'";
+              $query= $this->connect->prepare($this->sql);
+            $query->execute();
+            $this->course = $query->fetch(PDO::FETCH_ASSOC);
+        }
         public function setCourseListByCourseType($filter)
         {
             $data=array();
