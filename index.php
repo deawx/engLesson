@@ -634,8 +634,7 @@ session_start();
                 FROM student 
                 WHERE username='{$username}' 
                 AND password=md5('{$password}') 
-                AND status='Y";
-
+                AND status='Y'";
         $query = $app->db->prepare($sql);
         $query->execute();
 
@@ -782,6 +781,7 @@ session_start();
         }
         else
         {
+
             login();
             // echo 'cannot login';
             
