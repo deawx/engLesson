@@ -311,6 +311,7 @@ session_start();
             if( $correctAnswer )
                 $score++;
         }
+
         //check this user userd to test pretest
         $checkUserQuery = $app->db->prepare("SELECT COUNT(*) 
             FROM student 
@@ -321,14 +322,6 @@ session_start();
         
         if($userNeverTestPretest)
         {
-            $stmt = $app->db->prepare("INSERT INTO student (firstname, lastname,create_date) 
-                    VALUES (:firstname, :lastname ,CURDATE())");
-            $stmt->bindParam(':firstname', $post['firstname']);
-            $stmt->bindParam(':lastname', $post['lastname']);
-            $stmt->execute();
-            // echo '<pre>';print_r($post);
-            $userID = $app->db->lastInsertId(); 
-
             if($score <=8)
                 $level=1;
             else if($score <=16)
@@ -339,6 +332,17 @@ session_start();
                 $level=4;
             else
                 $level=5;
+            $stmt = $app->db->prepare("INSERT INTO student (firstname, lastname,create_date,level) 
+                    VALUES (:firstname, :lastname ,CURDATE(),:level)");
+            $stmt->bindParam(':firstname', $post['firstname']);
+            $stmt->bindParam(':lastname', $post['lastname']);
+            $stmt->bindParam(':level', $level);
+            $stmt->execute();
+            // echo '<pre>';print_r($post);
+            $userID = $app->db->lastInsertId(); 
+
+            
+               // echo $level;exit;
             $pretestLevel= 0;
             $scoreQuery = $app->db->prepare("INSERT INTO exam (user_id, score,level,test_date,exam_list_id) 
                 VALUES (:userID, :score ,:level,CURDATE(),:examID)");
@@ -517,11 +521,12 @@ session_start();
     }
     function updateStudentData()
     {
-        $app = Slim::getInstance();
+        $app     = Slim::getInstance();
         $request = $app->request();
-        $post = $request->post();
-
-        $body ="<h1>คลิ๊กเพื่อยืนยัน user เข้าใช้งาน</h1><a href='http://localhost/engLesson/approveUser?userID={$post['userID']}'>Approve</a>";
+        $post    = $request->post();
+// echo '<pre>';print_r($_SERVER);echo '</pre>';exit;
+        $hostname = $_SERVER['SERVER_NAME'].':'.$_SERVER['SERVER_PORT'];
+        $body ="<h1>คลิ๊กเพื่อยืนยัน user เข้าใช้งาน</h1><a href='http://{$hostname}/engLesson/approveUser?userID={$post['userID']}'>Approve</a>";
         Utility::sendMail($app->mail,array(
             'Subject' => 'Approve your account',
             'Body'    => $body,
@@ -902,7 +907,7 @@ session_start();
                 start_time=:startTime,
                 end_time=:endTime,
                 max_seat=:maxSeat,
-                room_id=:roomID,
+                room_id=:roomID
             WHERE schedule_id=:scheduleID";
         $query = $app->db->prepare($sql);
         $query->bindParam(':scheduleID', $_POST['scheduleID']);
@@ -1430,7 +1435,7 @@ session_start();
             $query->bindParam(':userID'    , $studentID);
             $query->bindParam(':scheduleID', $_POST['scheduleID']);
             $query->execute();
-            // print_r( $query->errorInfo() ); 
+            // 2
          }
          $app->redirect('/engLesson/showTeacherSchedule');
     }
