@@ -36,9 +36,9 @@ session_start();
     $app->mail->Host = "smtp.gmail.com";
     $app->mail->Port = 465; // or 587
     $app->mail->IsHTML(true);
-    $app->mail->Username = "unplugged2d@gmail.com";
-    $app->mail->Password = "halflink";
-    $app->mail->SetFrom("unplugged2d@gmail.com");
+    $app->mail->Username = "ttwtnt2d@gmail.com";
+    $app->mail->Password = "tt2038353";
+    $app->mail->SetFrom("ttwtnt2d@gmail.com");
 
     //set view template folder
     $view = $app->view();
@@ -639,8 +639,7 @@ session_start();
                 FROM student 
                 WHERE username='{$username}' 
                 AND password=md5('{$password}') 
-                AND status='Y";
-
+                AND status='Y'";
         $query = $app->db->prepare($sql);
         $query->execute();
 
@@ -787,6 +786,7 @@ session_start();
         }
         else
         {
+
             login();
             // echo 'cannot login';
             
