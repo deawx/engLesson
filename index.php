@@ -142,6 +142,7 @@ session_start();
     $app->post('/editMainCourse', 'editMainCourse');
     $app->post('/addMainCourse', 'addMainCourse');
     $app->post('/checkStudentUgly', 'checkStudentUgly');
+    $app->get('/checkScheduleTime', 'checkScheduleTime');
 
     $app->run(); 
     function home($username='')
@@ -1859,6 +1860,18 @@ session_start();
             {
             echo "Message has been sent";
             }
+    }
+    function checkScheduleTime()
+    {
+          $app = Slim::getInstance();
+
+          $_GET['scheduleDate']= Utility::toMysqlDate( $_GET['scheduleDate'] );
+        $courseClass= new Course($app->db);
+        $canInsertSchdule = $courseClass->checkScheduleTime( $_GET );
+        if($canInsertSchdule)
+            echo 'can';
+        else
+            echo 'cannot';
     }
 
 

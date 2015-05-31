@@ -1,6 +1,6 @@
 <?php include('/../webs/header.php'); ?>
 <h2>จัดการตารางเรียน</h2><br>
-    <form class="form-horizontal" action="<?=$this->data->action?>" method="post">
+    <form class="form-horizontal" action="<?=$this->data->action?>" method="post" id="schedule-form" onsubmit="return checkSchedule()">
   <div class="form-group">
     <label for="scheduleDate" class="col-md-2">วันที่</label>
     <div class="col-md-4">
@@ -56,5 +56,28 @@
   $("#scheduleDate").datepicker({
     format : 'dd/mm/yyyy'
   });
+  function checkSchedule()
+  {
+    var succeed =false;
+    var postData = $('#schedule-form').serialize();
+    console.log(postData);
+    // return false;
+    $.ajax({
+      async: false,
+      url: 'checkScheduleTime',
+      type: 'GET',
+      data: postData,
+    })
+    .done(function(msg) {
+      if(msg == 'can')
+          succeed= true;
+      else if(msg == 'cannot')
+      {
+          succeed= false;
+          alert('ไม่สามารถลงตารางเรียนเวลานี้ได้');
+      }
+    });
+    return succeed;
+  }
 </script>
    

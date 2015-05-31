@@ -532,4 +532,19 @@
             $query->execute();
             return $this->course = $query->fetch(PDO::FETCH_ASSOC);
         }
+        public function checkScheduleTime($data)
+        {
+            $checkTime =" AND (start_time BETWEEN '{$data['startTime']}' AND '{$data['endTime']}') 
+                        AND (end_time BETWEEN '{$data['startTime']}' AND '{$data['endTime']}')";
+            $this->sql="SELECT COUNT(*) count FROM schedule 
+                        WHERE course_id='{$data['courseID']}' 
+                        AND date='{$data['scheduleDate']}' 
+                        AND room_id='{$data['room']}' 
+                        {$checkTime}";
+             $query= $this->connect->prepare($this->sql);
+            $query->execute();
+            $count = $query->fetch(PDO::FETCH_ASSOC);
+            $teacherCanLessonThisTime = $count['count'] ==0;
+            return  $teacherCanLessonThisTime;
+        }
     }

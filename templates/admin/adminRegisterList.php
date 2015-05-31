@@ -12,7 +12,7 @@
                 <th>PayDate</th>
                 <th>Doc.</th>
                 <th>Confirm</th>
-                <th>Cancel</th>
+               <!--  <th>Cancel</th> -->
             </tr>
         </thead>
         <tbody>
@@ -30,8 +30,8 @@
                     <td> <a target="_blank" href="files/<?=$course['file_name']?>">เอกสาร</a></td>
                     <?php if($course['status'] !='Confirmed'):?>
                     <td> <a href="updatePaymentStatus/<?=$course['register_id']?>/Confirmed" role="button" class="btn btn-success">ยืนยันการสมัคร</a></td>
-                    <td> <a href="updatePaymentStatus/<?=$course['register_id']?>/Cancel" role="button" class="btn btn-danger">ยกเลิกการสมัคร</a></td>
-
+                   <!--  <td> <a href="updatePaymentStatus/<?=$course['register_id']?>/Cancel" role="button" class="btn btn-danger">ยกเลิกการสมัคร</a></td>
+ -->
                     <?php endif; ?>
                 </tr>
             <?php endforeach; ?>
