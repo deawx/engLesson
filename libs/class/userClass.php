@@ -54,7 +54,7 @@
         }
         public function deleteRegisterDataWhenExpiredDate()
         {
-            $this->sql="DELETE FROM register WHERE register_end_date <= CURDATE() AND status='Pending'";
+            $this->sql="DELETE FROM register WHERE register_end_date < CURDATE() AND status='Pending'";
             $query= $this->connect->prepare($this->sql);
             $query->execute();
         }

@@ -11,8 +11,9 @@
                 <?php if(!empty($scheduleID) ): ?>
                     <li href="#" class="list-group-item">
                         <?=Utility::toDisplayDate($schedule['schedule_date'])?>
-                        Start : <?=$schedule['start_time']?>
-                        End : <?=$schedule['end_time']?>
+                        Start :   <?=$schedule['start_time']?>
+                        End :     <?=$schedule['end_time']?> 
+                        Teacher : <?=$schedule['firstname'].' '.$schedule['lastname']?>
                         <a  href="manageScheduleData?scheduleID=<?=$scheduleID?>" class="btn btn-primary" role="button">แก้ไข</a>
                         <a  href="deleteSchedule?scheduleID=<?=$scheduleID?>" class="btn btn-danger" role="button">ลบ</a>
                     </li>

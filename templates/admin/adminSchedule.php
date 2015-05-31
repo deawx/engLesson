@@ -1,6 +1,6 @@
 <?php include('/../webs/header.php'); ?>
 <h2>จัดการตารางเรียน</h2><br>
-    <form class="form-horizontal" action="<?=$this->data->action?>" method="post" id="schedule-form" onsubmit="return checkSchedule()">
+    <form class="form-horizontal" action="<?=$this->data->action?>" method="post" id="schedule-form"><!--  onsubmit="return checkSchedule()"-->
   <div class="form-group">
     <label for="scheduleDate" class="col-md-2">วันที่</label>
     <div class="col-md-4">

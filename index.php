@@ -134,6 +134,8 @@ session_start();
     $app->get('/reportPopularMain' , 'reportPopularMain');
     $app->get('/reportPostExamMain', 'reportPostExamMain');
 
+     $app->get('/reportIncomeData'  , 'reportIncomeData');
+
 
     $app->get('/updatePaymentStatus/:registerID/:status', 'updatePaymentStatus');
 
@@ -390,6 +392,8 @@ session_start();
             }
         }
         $courseClass->setUserCourseList();
+        // echo '<pre>';
+        // print_r($courseClass->course);
         $page = 'register/reserveClass.php';
         $data = array( 'course'  => $courseClass->course );
         checkUserIsLogined($app,$_SESSION,$page,$data);
@@ -1388,10 +1392,13 @@ session_start();
             'month'     => $_POST['month'],
             'year'      => $_POST['year']
         ));
+        $courseData =$courseClass->setReportPopularData();
+        $jsonData = json_encode($courseData);
         $app->render('admin/reportPopular.php',$data=array(
             'course' => $courseClass->course ,
             'month'  => $monthName,
-            'year'   => $year
+            'year'   => $year,
+            'jsonData' => $jsonData
         ));
     }
     function showTeacherSchedule()
@@ -1872,6 +1879,12 @@ session_start();
             echo 'can';
         else
             echo 'cannot';
+    }
+    function reportIncomeData()
+    {
+        $app = Slim::getInstance();
+        $courseClass= new Course($app->db);
+        $courseClass->setReportIncomeData();
     }
 
 

@@ -8,7 +8,9 @@
                     Start : <?=$schedule['start_time']?>
                     End : <?=$schedule['end_time']?>
                     <?php  if( empty($schedule['booking_status'] ) ): ?>
-                        <?php  if( $course['course_type']=='Video' && $course['register_status']=='Confirmed'): ?>
+                        <?php  if( $course['course_type']=='Video' 
+                                    && $course['register_status'] == 'Confirmed'  
+                                    && $schedule['check_booking'] == 'notbooking'): ?>
                        <!--  <a  href="reserveSeat?scheduleID=<?=$scheduleID?>" class="btn btn-primary" role="button">จองที่นั่ง</a> -->
                             <a  href="room?scheduleID=<?=$scheduleID?>" class="btn btn-primary" role="button">จองที่นั่ง</a>
                         <?php endif; ?>

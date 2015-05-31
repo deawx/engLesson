@@ -159,13 +159,16 @@
             $condition='';
             if(!empty($filter['courseID']))
                 $condition=" AND c.course_id='{$filter['courseID']}'";
-        $this->sql="SELECT c.course_id,c.course_name,c.course_type,c.start_date,c.end_date,
+            $checkBookingField= "(SELECT IF(count(*) > 0 ,'booking','notbooking')  FROM booking ub 
+                                    INNER JOIN schedule us ON us.schedule_id=ub.schedule_id 
+                                    WHERE us.date=s.date AND ub.user_id=r.user_id ) check_booking";
+            $this->sql="SELECT c.course_id,c.course_name,c.course_type,c.start_date,c.end_date,
                         c.level,c.max_seat live_max_seat,
                         s.schedule_id,s.date schedule_date,s.start_time,s.end_time,s.max_seat video_max_seat,
                         ub.booking_status,ub.booking_id,
                         teacher.firstname,teacher.lastname,
                         s.max_seat - SuM(IF(b.booking_id IS NULL,0,1)   ) remain_seat  ,
-                        row.row_name,col.column_name,r.status register_status
+                        row.row_name,col.column_name,r.status register_status ,{$checkBookingField}
                     FROM register r 
                     INNER JOIN course c ON c.course_id=r.course_id 
                     INNER JOIN schedule s ON s.course_id=c.course_id 
@@ -213,6 +216,7 @@
                 $schedule[ $scheduleID ]['end_time']       = $value['end_time'];
                 $schedule[ $scheduleID ]['booking_id']     = $value['booking_id'];
                 $schedule[ $scheduleID ]['booking_status'] = $value['booking_status'];
+                $schedule[ $scheduleID ]['check_booking'] = $value['check_booking'];
                 $schedule[ $scheduleID ]['firstname']      = $value['firstname'];
                 $schedule[ $scheduleID ]['lastname']       = $value['lastname'];
                 $schedule[ $scheduleID ]['seat_name']       = $value['row_name'].$value['column_name'];
@@ -317,7 +321,7 @@
                 $filter['paymentStatus']=FALSE;
             
             if($filter['paymentStatus'])
-                $condition="WHERE r.Status IN ('Pending','Printed','Paid','Confirmed') ORDER BY r.Status ";
+                $condition="WHERE r.Status IN ('Pending','Printed','Paid','Confirmed') ORDER BY r.Status DESC";
             if(!empty($filter['month'])  && !empty($filter['year']))
                 $condition="WHERE MONTH(r.pay_date)='{$filter['month']}' 
                             AND YEAR(r.pay_date)='{$filter['year']}' 
@@ -335,6 +339,68 @@
             $query->execute();
             $this->course = $query->fetchAll(PDO::FETCH_ASSOC);
         }
+        public function getReportIncomeData( $filter=array() )
+        {
+             if(!empty($filter['month'])  && !empty($filter['year']))
+                $condition="WHERE MONTH(r.pay_date)='{$filter['month']}' 
+                            AND YEAR(r.pay_date)='{$filter['year']}' 
+                            AND r.pay_date IS NOT NULL";
+            $this->sql="SELECT 
+                r.file_name,r.register_id,r.`status`,
+                r.register_date,r.register_end_date,r.pay_date,
+                s.firstname,s.lastname,s.email,
+                SUM(c.Price) sum_price,
+                {$this->courseField}
+                FROM register r 
+                INNER JOIN course c ON c.course_id=r.course_id
+                INNER JOIN student s ON s.user_id = r.user_id 
+                {$condition} GROUP BY c.level";
+            $query= $this->connect->prepare($this->sql);
+            $query->execute();
+            $this->course = $query->fetchAll(PDO::FETCH_ASSOC);
+        }
+        public function setReportPopularData()
+        {
+            $col1 =array(
+                "id" =>"",
+                "label" => "Course Namee",
+                "pattern" => "",
+                "type" => "string"
+            );
+            $col2 =array(
+                "id" =>"",
+                "label" => "Popular",
+                "pattern" => "",
+                "type" => "number"
+            );
+            $data['cols']=array($col1,$col2);
+            $data['rows']=array();
+            $report=array();
+            foreach($this->course as $key => $value) 
+            {
+                $pieColumnName = array('v' => $value['course_name']);
+                $pieAmount = array('v' => $value['count']);
+                $report['c']=array($pieColumnName,$pieAmount);
+                array_push($data['rows'], $report);
+                # code...
+            }
+            return $data;
+            // $v1 = array( 'v' => 'work');
+            // $v2 = array( 'v' => 70);
+
+            // $v3 = array( 'v' => 'work2');
+            // $v4 = array( 'v' => 70);
+
+            // $v5 = array( 'v' => 'work3');
+            // $v6 = array( 'v' => 70);
+            //  $report['c']=array($v1,$v2);array_push($data['rows'], $report);
+            //  $report['c']=array($v3,$v4);array_push($data['rows'], $report);
+            //  $report['c']=array($v5,$v6);array_push($data['rows'], $report);
+            //  $report['c']=array($v1,$v2);
+            //     array_push($data['rows'], $report);
+            //     // echo '<pre>';
+            // echo json_encode($data);
+        }
         public function getPopularCourse($filter=array())
         {
             $condition='';
@@ -342,11 +408,11 @@
                 $condition="WHERE MONTH(r.register_date)='{$filter['month']}' 
                             AND YEAR(r.register_date)='{$filter['year']}' 
                             AND r.register_date IS NOT NULL";
-            $this->sql="SELECT COUNT(*) count,{$this->courseField}
+            $this->sql="SELECT * FROM (SELECT COUNT(*) count,{$this->courseField}
                 FROM register r 
                 INNER JOIN course c ON c.course_id=r.course_id
                 {$condition}
-                GROUP BY r.course_id";
+                GROUP BY r.course_id ) report_table ORDER BY report_table.count DESC";
             $query= $this->connect->prepare($this->sql);
             $query->execute();
             $this->course = $query->fetchAll(PDO::FETCH_ASSOC);
@@ -470,13 +536,14 @@
             $condition='';
             if(!empty($filter['courseID']))
                 $condition=" WHERE c.course_id='{$filter['courseID']}'";
-            $this->sql="SELECT {$this->courseField} ,{$this->registerField},
+             $this->sql="SELECT {$this->courseField} ,{$this->registerField},
                         u.firstname,u.lastname,
                         e.score,e.ispass,e.test_date
                         FROM register r 
                         INNER JOIN course c ON c.course_id=r.course_id 
                         INNER JOIN student u ON u.user_id=r.user_id 
-                        LEFT JOIN exam e ON e.register_id=r.register_id
+                        LEFT JOIN exam e ON e.register_id=r.register_id 
+                        {$condition}
                         {$this->reportOrder}";
             $query= $this->connect->prepare($this->sql);
             $query->execute();
