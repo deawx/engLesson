@@ -317,7 +317,7 @@
                 $filter['paymentStatus']=FALSE;
             
             if($filter['paymentStatus'])
-                $condition="WHERE r.Status IN ('Pending','Printed','Paid','Confirmed')";
+                $condition="WHERE r.Status IN ('Pending','Printed','Paid','Confirmed') ORDER BY r.Status ";
             if(!empty($filter['month'])  && !empty($filter['year']))
                 $condition="WHERE MONTH(r.pay_date)='{$filter['month']}' 
                             AND YEAR(r.pay_date)='{$filter['year']}' 

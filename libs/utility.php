@@ -77,5 +77,6 @@ class Utility
         {
         // echo "Message has been sent";
         }
+        // exit;
     }
 }
