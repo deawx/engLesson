@@ -11,7 +11,8 @@
                         <?php  if( $course['course_type']=='Video' 
                                     && $course['register_status'] == 'Confirmed'  
                                     && $schedule['check_booking'] == 'notbooking' 
-                                    && !empty($schedule['schedule_this_week']) ): ?>
+                                    && !empty($schedule['schedule_this_week']) 
+                                    ): ?>
                        <!--  <a  href="reserveSeat?scheduleID=<?=$scheduleID?>" class="btn btn-primary" role="button">จองที่นั่ง</a> -->
                             <a  href="room?scheduleID=<?=$scheduleID?>" class="btn btn-primary" role="button">จองที่นั่ง</a>
                         <?php endif; ?>

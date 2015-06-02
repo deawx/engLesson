@@ -408,6 +408,8 @@ session_start();
         $courseClass->getUserRegisterCourse(array(
             'userID' => $_SESSION['loginUser']
         ));
+        $courseClass->setUserRegisterCourse();
+        // echo '<pre>';print_r($courseClass->course);echo '</pre>';
         $data=array(
             'course' => $courseClass->course
         );
@@ -577,7 +579,7 @@ session_start();
             WHERE firstname='{$post['firstname']}'
             AND lastname='{$post['lastname']}'");
         $checkUserQuery->execute();
-        $user = $checkUserQuery->fetch();
+        $user = $checkUserQuery->fetch(PDO::FETCH_ASSOC);
         $userUsedToTestPretest = $user['count']>0;
         if( $userUsedToTestPretest )
         {

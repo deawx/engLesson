@@ -37,7 +37,7 @@
                     <?php endforeach;?>
                     <td class="text-center"><?=$sumStudentStudy?></td>
                     <td class="text-center">
-                        <?php $userIsPass = ($sumStudentStudy / $sumTotalSchedule) >=0.8; ?>
+                        <?php $userIsPass = ($sumStudentStudy / $sumTotalSchedule) >=0.74; ?>
                         <?php if($userIsPass):?>
                             <span class="label label-success">Pass</span>
                         <?php else : ?>

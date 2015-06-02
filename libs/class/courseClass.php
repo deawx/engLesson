@@ -31,7 +31,21 @@
                                         WHERE b.user_id=r.user_id 
                                         AND cc.course_id=c.course_id 
                                         AND b.booking_status='Study')";
-            $this->totalScheduleQuery="(SELECT  COUNT(*)  FROM  `schedule` s  WHERE s.course_id = c.course_id )";
+            $this->totalScheduleQuery="(
+                    SELECT
+                        COUNT(sss.schedule_count)count
+                    FROM
+                        (
+                            SELECT
+                                COUNT(*)schedule_count,s.course_id
+                            FROM
+                                `schedule` s
+                            
+                            GROUP BY
+                                s.date
+                        )sss WHERE
+                                c.course_id = sss.course_id
+                )";
             
          
         }
@@ -131,7 +145,7 @@
         public function getUserRegisterCourse($filter)
         {
             $this->sql="SELECT *,
-                         IF((rr.total_study / rr.total_schedule)>= 0.8,'Pass','NotPass') pass_status
+                         IF((rr.total_study / rr.total_schedule)>= 0.74,'Pass','NotPass') pass_status
                         FROM(SELECT 
                                 {$this->courseField} , 
                                 {$this->registerField} , 
@@ -145,6 +159,34 @@
             $query->execute();
             $this->course = $query->fetchAll(PDO::FETCH_ASSOC);
 
+        }
+        public function setUserRegisterCourse()
+        {
+            foreach ($this->course as $key => $value) {
+
+                // $totalSchedule[]
+                 $this->course[$key]['total_schedule'] = $this->getTotalSchedule($value['course_id']);
+            }
+        }
+        public function getTotalSchedule($courseID)
+        {
+            $this->sql="SELECT
+                        COUNT(sss.schedule_count)count
+                    FROM
+                        (
+                            SELECT
+                                COUNT(*)schedule_count,s.course_id,s.date
+                            FROM
+                                `schedule` s
+                             WHERE
+                                s.course_id ={$courseID}
+                            GROUP BY
+                                s.date
+                        )sss ";
+              $query= $this->connect->prepare($this->sql);
+            $query->execute();
+            $data = $query->fetch(PDO::FETCH_ASSOC);
+            return $data['count'];
         }
         public function getRegisterDetail($filter)
         {
@@ -515,7 +557,7 @@
             {
                 $registerID = $value['register_id'];
                 $courseID   = $value['course_id'];
-                $scheduleID = $value['schedule_id']; 
+                $scheduleID = $value['schedule_date']; 
                 $userID     = $value['user_id']; 
                 $bookingID  = $value['booking_id']; 
                 
@@ -527,8 +569,11 @@
                 $data[ $registerID ]['user_id']     = $value['user_id'];   
                 $data[ $registerID ]['schedule_id'] = $value['schedule_id'];   
                 $data[ $registerID ]['name'] = $value['firstname'].' '.$value['lastname'];   
-
-                $booking[ $scheduleID ][ $userID ]['booking_id'] = $bookingID;
+                if(!empty($bookingID))
+                {
+                    $booking[ $scheduleID ][ $userID ]['booking_id'] = $bookingID;
+                    $booking[ $scheduleID ][ $userID ]['booking_status'] = $value['booking_status'];
+                }
                 $booking[ $scheduleID ][ $userID ]['booking'] = !empty($bookingID);
             }
             $this->booking  = $booking;
