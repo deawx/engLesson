@@ -380,7 +380,7 @@ session_start();
         {
             $scheduleDataIsPassed = $presentDate > $value['schedule_date'];
             $studentAlreadyBooking = !empty($value['booking_id']);
-            $studentIsNotComeToClass = $value['booking_id'] !='Study';
+            $studentIsNotComeToClass = $value['booking_status'] !='Study';
            
             if($studentAlreadyBooking &&  $studentIsNotComeToClass  && $scheduleDataIsPassed )
             {
@@ -583,7 +583,7 @@ session_start();
         $userUsedToTestPretest = $user['count']>0;
         if( $userUsedToTestPretest )
         {
-            $sql="SELECT score FROM exam WHERE user_id='{$user['user_id']}'";
+            $sql="SELECT score FROM exam WHERE user_id='{$user['user_id']}' ORDER BY test_id DESC";
             $checkUserPrestestScoreQuery = $app->db->prepare($sql);
             $checkUserPrestestScoreQuery->execute();
             $exam = $checkUserPrestestScoreQuery->fetch(PDO::FETCH_ASSOC);

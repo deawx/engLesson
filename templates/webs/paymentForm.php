@@ -26,7 +26,7 @@
                ชื่อ : <?=$this->data->course['firstname'].' '.$this->data->course['lastname']?>
             </div>
             <div class="col-xs-6">
-               Level : <?=$this->data->course['user_level']?>
+               Level : <?=$this->data->course['level']?>
             </div>
         </div>
         <div class="row">

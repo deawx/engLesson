@@ -527,7 +527,7 @@
         }
         public function getStudentsInCourse( $filter =array() )
         {
-             $this->sql="SELECT r.course_id,
+           $this->sql="SELECT r.course_id,
                         {$this->registerField} , 
                         {$this->scheduleField},
                         u.firstname,u.lastname,u.user_id,
