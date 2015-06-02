@@ -584,7 +584,7 @@ session_start();
             $sql="SELECT score FROM exam WHERE user_id='{$user['user_id']}'";
             $checkUserPrestestScoreQuery = $app->db->prepare($sql);
             $checkUserPrestestScoreQuery->execute();
-            $exam = $checkUserPrestestScoreQuery->fetch();
+            $exam = $checkUserPrestestScoreQuery->fetch(PDO::FETCH_ASSOC);
 
             $app->render('webs/preTestResultPage.php',array(
                 'score'  => $exam['score'],
