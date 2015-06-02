@@ -164,7 +164,10 @@
                                     WHERE us.date=s.date AND ub.user_id=r.user_id ) check_booking";
             $this->sql="SELECT c.course_id,c.course_name,c.course_type,c.start_date,c.end_date,
                         c.level,c.max_seat live_max_seat,
-                        s.schedule_id,s.date schedule_date,s.start_time,s.end_time,s.max_seat video_max_seat,
+                        s.schedule_id,s.date schedule_date,
+                        WEEK(s.date) schedule_week,WEEK(CURDATE()) current_week,
+                        IF( YEARWEEK(s.date) = YEARWEEK( CURDATE() ),1,'' ) schedule_this_week,
+                        s.start_time,s.end_time,s.max_seat video_max_seat,
                         ub.booking_status,ub.booking_id,
                         teacher.firstname,teacher.lastname,
                         s.max_seat - SuM(IF(b.booking_id IS NULL,0,1)   ) remain_seat  ,
@@ -219,6 +222,7 @@
                 $schedule[ $scheduleID ]['check_booking'] = $value['check_booking'];
                 $schedule[ $scheduleID ]['firstname']      = $value['firstname'];
                 $schedule[ $scheduleID ]['lastname']       = $value['lastname'];
+                $schedule[ $scheduleID ]['schedule_this_week']       = $value['schedule_this_week'];
                 $schedule[ $scheduleID ]['seat_name']       = $value['row_name'].$value['column_name'];
             }
             $this->course = $data;
