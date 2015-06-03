@@ -1563,12 +1563,15 @@ session_start();
         $app = Slim::getInstance();
         $courseClass = new Course($app->db);
         $courseClass->getStudentsInCourse(array(
-            'courseID' => $courseID
+            'courseID' => $courseID,
+            'courseType' => 'Live'
         ));
         $courseName='';
         if(!empty( $courseClass->course ))
             $courseName = $courseClass->course[0]['course_name'];
-        $courseClass->setStudentsInCourse();
+        $courseClass->setStudentsInCourse(array(
+            'courseType' => 'Live'
+        ));
         $app->render('admin/teacherStudentSchedule.php',array(
             'course'     => $courseClass->course,
             'courseID'   => $courseID,
@@ -1782,9 +1785,11 @@ session_start();
          // echo '<pre>';print_r($_POST);echo '</pre>';exit;
          foreach ($_POST['booking'] as $scheduleID => $shedule) 
          {
+            // echo '<pre>';print_r($shedule);echo '</pre>';
             foreach ($shedule as $studentID => $value) 
             {
                 $sql="SELECT COUNT(*) count FROM booking WHERE user_id='{$studentID}' AND schedule_id='{$scheduleID}'";
+                // echo $sql.'<hr>';
                  $checkQuery = $app->db->prepare( $sql );
                   $checkQuery->execute();
                  $data = $checkQuery->fetch(PDO::FETCH_ASSOC);

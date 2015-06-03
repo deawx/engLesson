@@ -564,10 +564,13 @@
                 $registerID = $value['register_id'];
                 $courseID   = $value['course_id'];
                 $scheduleID = $value['schedule_date']; 
+                if(!empty($filter['courseType']) && $filter['courseType'] =='Live')
+                    $scheduleID = $value['schedule_id']; 
                 $userID     = $value['user_id']; 
                 $bookingID  = $value['booking_id']; 
                 
                 $schedule[ $scheduleID ]['schedule_date'] = $value['schedule_date'];
+                $schedule[ $scheduleID ]['schedule_id'] = $value['schedule_id'];
                 $schedule[ $scheduleID ]['start_time']    = $value['start_time'];
                 $schedule[ $scheduleID ]['end_time']      = $value['end_time'];
 
