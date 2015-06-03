@@ -166,6 +166,11 @@
 
                 // $totalSchedule[]
                  $this->course[$key]['total_schedule'] = $this->getTotalSchedule($value['course_id']);
+                 $thisStudentIsPass = $value['total_study'] / $this->course[$key]['total_schedule'] >=0.74;
+                 $passStatus = 'NotPass';
+                 if( $thisStudentIsPass )
+                    $passStatus='Pass';
+                 $this->course[$key]['pass_status'] = $passStatus;
             }
         }
         public function getTotalSchedule($courseID)
@@ -184,6 +189,7 @@
                                 s.date
                         )sss ";
               $query= $this->connect->prepare($this->sql);
+              echo $this->sql.'<hr>';
             $query->execute();
             $data = $query->fetch(PDO::FETCH_ASSOC);
             return $data['count'];
