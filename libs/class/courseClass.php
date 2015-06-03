@@ -189,7 +189,7 @@
                                 s.date
                         )sss ";
               $query= $this->connect->prepare($this->sql);
-              echo $this->sql.'<hr>';
+              // echo $this->sql.'<hr>';
             $query->execute();
             $data = $query->fetch(PDO::FETCH_ASSOC);
             return $data['count'];
