@@ -836,12 +836,18 @@ session_start();
          checkAdminLoggedIn($_SESSION);
          $courseClass = new Course($app->db);
          $filter=array();
+         $mainPage='';
          if(!empty($_GET['level']))
             $filter['level'] = $_GET['level'];
+        if(!empty($_GET['courseID']))
+            $filter['courseID'] = $_GET['courseID'];
+        if(!empty($_GET['mainPage']))
+            $mainPage = $_GET['mainPage'];
          $courseClass->getCourseList( $filter );
          $courseClass->setCourseList( $filter=array() );
          $data=array(
-            'course' => $courseClass->course
+            'course' => $courseClass->course ,
+            'mainPage' => $mainPage
          );
          $app->render('admin/adminCourse.php',$data);
     }
@@ -911,7 +917,7 @@ session_start();
         $query->bindParam(':maxSeat', $_POST['maxSeat']);
         $query->bindParam(':roomID', $_POST['room']);
         $query->execute();
-        $app->redirect('../engLesson/adminCourse');
+        $app->redirect('../engLesson/adminCourse?courseID='.$_POST['courseID']);
     }
     function editSchedule()
     {
@@ -934,7 +940,7 @@ session_start();
         $query->bindParam(':maxSeat', $_POST['maxSeat']);
         $query->bindParam(':roomID', $_POST['room']);
         $query->execute();
-        $app->redirect('../engLesson/adminCourse');
+        $app->redirect('../engLesson/adminCourse?courseID='.$_POST['courseID']);
     }
     function showCourseDetail()
     {

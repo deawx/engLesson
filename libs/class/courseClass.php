@@ -293,6 +293,8 @@
             $condition=" AND c.level='1'";
             if(!empty($filter['level']))
                 $condition = " AND c.level='{$filter['level']}'";
+            if(!empty($filter['courseID']))
+                $condition = " AND c.course_id='{$filter['courseID']}'";
            $this->sql="SELECT  
                     c.course_id,c.course_name,c.course_type,c.start_date,c.end_date,
                     c.level,c.max_seat live_max_seat,

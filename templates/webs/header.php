@@ -77,7 +77,7 @@
                         <li  class="<?=($request =='showMainCourseList')? 'active':'' ;?>">
                           <a href="/engLesson/showMainCourseList"><span class="glyphicon glyphicon-send"> </span> ข้อมูลหลักสูตร</a></li>
                         <li  class="<?=($request =='adminCourse')? 'active':'' ;?>">
-                          <a href="/engLesson/adminCourse"><span class="glyphicon glyphicon-send"> </span> ข้อมูลคอร์สเรียน</a></li>
+                          <a href="/engLesson/adminCourse?mainPage=1"><span class="glyphicon glyphicon-send"> </span> ข้อมูลคอร์สเรียน</a></li>
                         <li  class="<?=($request =='showExamList')? 'active':'' ;?>">
                           <a href="/engLesson/showExamList"><span class="glyphicon glyphicon-send"> </span> ข้อมูลแบบทดสอบ</a></li>
                         <li  class="<?=($request =='showRegisterList')? 'active':'' ;?>">
