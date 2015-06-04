@@ -99,9 +99,10 @@
         {
             $this->sql = "{$this->select} 
                             {$this->from} 
-                            {$this->join}
+                            {$this->join} AND r.user_id='{$filter['userID']}' 
                         WHERE {$this->condition}  
-                        AND c.`level` <={$filter['level']} 
+                        AND c.`level` <={$filter['level']}  
+                        AND r.register_id IS NULL 
                         {$this->group} 
                         {$this->having}
                         {$this->order} ";
@@ -204,9 +205,15 @@
         }
         public function getUserCourseList($filter)
         {
+            $currentWeekCondition = " AND YEARWEEK(s.date) <= YEARWEEK( CURDATE() ) "; 
             $condition='';
             if(!empty($filter['courseID']))
                 $condition=" AND c.course_id='{$filter['courseID']}'";
+            if(!empty($filter['studyData']))
+            {
+                $condition=" AND ub.booking_id IS NOT NULL ";
+                $currentWeekCondition='';
+            }
             $checkBookingField= "(SELECT IF(count(*) > 0 ,'booking','notbooking')  FROM booking ub 
                                     INNER JOIN schedule us ON us.schedule_id=ub.schedule_id 
                                     WHERE us.date=s.date AND ub.user_id=r.user_id ) check_booking";
@@ -229,7 +236,9 @@
                    LEFT JOIN  room_seat rs ON rs.room_seat_id =ub.room_seat_id
                    LEFT JOIN room_row row ON row.row_id =rs.row_id
                    LEFT JOIN room_column col ON col.column_id =rs.column_id
-                    WHERE r.user_id='{$filter['userID']}'  {$condition}
+                    WHERE r.user_id='{$filter['userID']}'  
+                    {$condition} 
+                    {$currentWeekCondition}
                     GROUP BY s.schedule_id";//AND s.date >= CURDATE()
             $query= $this->connect->prepare($this->sql);
             $query->execute();
@@ -279,8 +288,11 @@
         {
 
         }
-        public function getCourseList($filter)
+        public function getCourseList($filter=array())
         {
+            $condition=" AND c.level='1'";
+            if(!empty($filter['level']))
+                $condition = " AND c.level='{$filter['level']}'";
            $this->sql="SELECT  
                     c.course_id,c.course_name,c.course_type,c.start_date,c.end_date,
                     c.level,c.max_seat live_max_seat,
@@ -289,7 +301,7 @@
                     FROM course c 
                     LEFT JOIN schedule s ON s.course_id=c.course_id 
                     LEFT JOIN user teacher ON teacher.user_id=s.teacher_id
-                    WHERE c.enabled='Y' ";
+                    WHERE c.enabled='Y' {$condition}";
             $query= $this->connect->prepare($this->sql);
             $query->execute();
             $this->course = $query->fetchAll(PDO::FETCH_ASSOC);
@@ -373,7 +385,7 @@
                 $filter['paymentStatus']=FALSE;
             
             if($filter['paymentStatus'])
-                $condition="WHERE r.Status IN ('Pending','Printed','Paid','Confirmed') ORDER BY r.Status DESC";
+                $condition="WHERE r.Status IN ('Paid') ORDER BY r.Status DESC";
             if(!empty($filter['month'])  && !empty($filter['year']))
                 $condition="WHERE MONTH(r.pay_date)='{$filter['month']}' 
                             AND YEAR(r.pay_date)='{$filter['year']}' 
@@ -533,6 +545,11 @@
         }
         public function getStudentsInCourse( $filter =array() )
         {
+            $condition='';
+            if(!empty($filter['courseType']) && $filter['courseType']=='Live')
+            {
+                $condition =" AND YEARWEEK(s.date) <= YEARWEEK(CURDATE()) ";
+            }
            $this->sql="SELECT r.course_id,
                         {$this->registerField} , 
                         {$this->scheduleField},
@@ -545,7 +562,7 @@
                         LEFT JOIN booking b ON b.user_id = u.user_id 
                             AND b.schedule_id=s.schedule_id 
                             AND b.booking_status='Study'
-                        WHERE r.course_id='{$filter['courseID']}' 
+                        WHERE r.course_id='{$filter['courseID']}'  {$condition}
                         ORDER BY s.date,u.firstname";
             $query= $this->connect->prepare($this->sql);
             $query->execute();
@@ -659,8 +676,8 @@
         }
         public function checkScheduleTime($data)
         {
-            $checkTime =" AND (start_time BETWEEN '{$data['startTime']}' AND '{$data['endTime']}') 
-                        AND (end_time BETWEEN '{$data['startTime']}' AND '{$data['endTime']}')";
+            $checkTime =" AND ((start_time BETWEEN '{$data['startTime']}' AND '{$data['endTime']}') 
+                        OR (end_time BETWEEN '{$data['startTime']}' AND '{$data['endTime']}') )";
             $this->sql="SELECT COUNT(*) count FROM schedule 
                         WHERE course_id='{$data['courseID']}' 
                         AND date='{$data['scheduleDate']}' 
@@ -671,5 +688,9 @@
             $count = $query->fetch(PDO::FETCH_ASSOC);
             $teacherCanLessonThisTime = $count['count'] ==0;
             return  $teacherCanLessonThisTime;
+        }
+        public function getStudentStudy()
+        {
+            $this->sql="";
         }
     }

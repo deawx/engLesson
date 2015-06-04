@@ -21,9 +21,9 @@
 <div class="row">
   <div class="col-md-6">
     <div class="panel panel-default">
-      <div class="panel-heading"><a href="reserve">จัดการตารางเรียน</a></div>
+      <div class="panel-heading"><a href="reserve?studyData=1">ข้อมูลการเข้าเรียน</a></div>
       <div class="panel-body">
-        Reserve for seat lesson
+       Student Study Data
       </div>
     </div>
   </div>

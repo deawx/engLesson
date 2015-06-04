@@ -79,6 +79,7 @@ session_start();
     $app->get('/printPaymentForm', 'printPaymentForm');
     $app->get('/printForm', 'printForm');
     $app->get('/study', 'study');
+    $app->get('/studentStudyData', 'studentStudyData');
     $app->post('/studentData','updateStudentData');
     $app->post('/sendPaymentFile','sendPaymentFile');
     //ADMIN
@@ -369,11 +370,15 @@ session_start();
         $app         = Slim::getInstance();
         $courseClass = new Course($app->db);
         $courseID='';
+        $studyData ='';
         if(!empty( $_GET['courseID'] ) )
             $courseID = $_GET['courseID'];
+        if(!empty( $_GET['studyData'] ) )
+            $studyData = $_GET['studyData'];
         $courseClass->getUserCourseList(array(
             'userID'   => $_SESSION['loginUser'],
-            'courseID' => $courseID
+            'courseID' => $courseID,
+            'studyData' => $studyData,
         ));
          $presentDate = date('Y-m-d');
         foreach ($courseClass->course as $key => $value) 
@@ -461,7 +466,8 @@ session_start();
         $userClass   = new User($app->db,$_SESSION,'student');
         $courseClass = new Course($app->db);
         $courseClass->getCourseListByUserLevel(array(
-            'level' => $userClass->user['level']
+            'level' => $userClass->user['level'],
+            'userID'=> $userClass->user['user_id']
         ));
         $courseClass->setCourseListByCourseType($filter=array());
         $data = array(
@@ -829,7 +835,10 @@ session_start();
          $app = Slim::getInstance();
          checkAdminLoggedIn($_SESSION);
          $courseClass = new Course($app->db);
-         $courseClass->getCourseList( $filter=array() );
+         $filter=array();
+         if(!empty($_GET['level']))
+            $filter['level'] = $_GET['level'];
+         $courseClass->getCourseList( $filter );
          $courseClass->setCourseList( $filter=array() );
          $data=array(
             'course' => $courseClass->course
@@ -1892,6 +1901,11 @@ session_start();
         $app = Slim::getInstance();
         $courseClass= new Course($app->db);
         $courseClass->setReportIncomeData();
+    }
+    function studentStudyData()
+    {
+         $app = Slim::getInstance();
+        $courseClass= new Course($app->db);
     }
 
 
