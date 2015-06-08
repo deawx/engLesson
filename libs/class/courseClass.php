@@ -684,7 +684,8 @@
                         WHERE course_id='{$data['courseID']}' 
                         AND date='{$data['scheduleDate']}' 
                         AND room_id='{$data['room']}' 
-                        {$checkTime}";
+                        {$checkTime} 
+                        AND schedule_id<>'{$data['scheduleID']}'";
              $query= $this->connect->prepare($this->sql);
             $query->execute();
             $count = $query->fetch(PDO::FETCH_ASSOC);
