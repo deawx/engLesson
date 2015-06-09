@@ -48,6 +48,7 @@
          <input type="hidden" name="scheduleID" value="<?=$this->data->schedule['schedule_id']?>">
           <input type="hidden" name="courseID" value="<?=$this->data->schedule['course_id']?>">
       <?php endif; ?>
+      <input type="hidden" name="action" value="<?=$this->data->action; ?>">
     </form>
 
 <?php include('/../webs/footer.php'); ?>

@@ -678,14 +678,16 @@
         }
         public function checkScheduleTime($data)
         {
+            $condition ='';
             $checkTime =" AND ((start_time BETWEEN '{$data['startTime']}' AND '{$data['endTime']}') 
                         OR (end_time BETWEEN '{$data['startTime']}' AND '{$data['endTime']}') )";
+            if($data['action'] == 'editSchedule')
+                $condition = " AND schedule_id<>'{$data['scheduleID']}'";
             $this->sql="SELECT COUNT(*) count FROM schedule 
                         WHERE course_id='{$data['courseID']}' 
                         AND date='{$data['scheduleDate']}' 
                         AND room_id='{$data['room']}' 
-                        {$checkTime} 
-                        AND schedule_id<>'{$data['scheduleID']}'";
+                        {$checkTime} {$condition}  ";
              $query= $this->connect->prepare($this->sql);
             $query->execute();
             $count = $query->fetch(PDO::FETCH_ASSOC);
