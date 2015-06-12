@@ -97,9 +97,14 @@
         }
         public function getCourseListByUserLevel($filter)
         {
-            $this->sql = "{$this->select} 
+            $this->sql = "{$this->select} ,
+           c.max_seat - SuM(
+
+    IF(rr.register_id IS NULL, 0, 1)
+    ) course_remain_seat
                             {$this->from} 
-                            {$this->join} AND r.user_id='{$filter['userID']}' 
+                            {$this->join} AND r.user_id='{$filter['userID']}'  
+                            LEFT JOIN register rr ON rr.course_id = c.course_id
                         WHERE {$this->condition}  
                         AND c.`level` <={$filter['level']}  
                         AND r.register_id IS NULL 
@@ -135,7 +140,7 @@
                 $data[ $courseType ][ $index ]['course_name'] = $value['course_name'];
                 $data[ $courseType ][ $index ]['course_type'] = $value['course_type'];
                 $data[ $courseType ][ $index ]['max_seat']    = $value['max_seat'];
-                $data[ $courseType ][ $index ]['remain_seat'] = $value['remain_seat'];
+                $data[ $courseType ][ $index ]['remain_seat'] = $value['course_remain_seat'];
                 $data[ $courseType ][ $index ]['start_date']  = $value['start_date'];
                 $data[ $courseType ][ $index ]['end_date']    = $value['end_date'];
                 $data[ $courseType ][ $index ]['price']       = $value['price'];
@@ -299,7 +304,7 @@
                     c.course_id,c.course_name,c.course_type,c.start_date,c.end_date,
                     c.level,c.max_seat live_max_seat,
                     s.schedule_id,s.date schedule_date,s.start_time,s.end_time,s.max_seat video_max_seat,
-                    teacher.firstname,teacher.lastname
+                    teacher.firstname,teacher.lastname,IF(CURDATE() < s.date ,1,'') incoming_schedule
                     FROM course c 
                     LEFT JOIN schedule s ON s.course_id=c.course_id 
                     LEFT JOIN user teacher ON teacher.user_id=s.teacher_id
@@ -328,6 +333,7 @@
                 $schedule[ $scheduleID ]['end_time']       = $value['end_time'];;
                 $schedule[ $scheduleID ]['firstname']      = $value['firstname'];
                 $schedule[ $scheduleID ]['lastname']       = $value['lastname'];
+                $schedule[ $scheduleID ]['incoming_schedule']       = $value['incoming_schedule'];
            }
            $this->course = $data;
         }
@@ -556,14 +562,15 @@
                         {$this->registerField} , 
                         {$this->scheduleField},
                         u.firstname,u.lastname,u.user_id,
-                        b.booking_id,b.booking_status,c.course_name
+                        b.booking_id,b.booking_status,c.course_name,
+                        IF(CURDATE() < s.date, 1,0) pass_schedule
                         FROM register r 
                         INNER JOIN schedule s ON s.course_id=r.course_id  
                         INNER JOIN course c ON c.course_id=r.course_id
                         INNER JOIN student u ON u.user_id=r.user_id 
                         LEFT JOIN booking b ON b.user_id = u.user_id 
                             AND b.schedule_id=s.schedule_id 
-                            AND b.booking_status='Study'
+                           
                         WHERE r.course_id='{$filter['courseID']}'  {$condition}
                         ORDER BY s.date,u.firstname";
             $query= $this->connect->prepare($this->sql);
@@ -592,6 +599,7 @@
                 $schedule[ $scheduleID ]['schedule_id'] = $value['schedule_id'];
                 $schedule[ $scheduleID ]['start_time']    = $value['start_time'];
                 $schedule[ $scheduleID ]['end_time']      = $value['end_time'];
+                $schedule[ $scheduleID ]['pass_schedule']      = $value['pass_schedule'];
 
                 $data[ $registerID ]['course_id']   = $value['course_id'];   
                 $data[ $registerID ]['user_id']     = $value['user_id'];   

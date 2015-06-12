@@ -1577,6 +1577,46 @@ session_start();
     {
         $app = Slim::getInstance();
         $courseClass = new Course($app->db);
+        
+        $sql="SELECT r.user_id,r.register_id,r.course_id,s.schedule_id,s.date schedule_date ,
+            b.booking_id,b.booking_status
+            FROM `schedule` s 
+            INNER JOIN course c ON c.course_id=s.course_id AND c.course_type='Live' 
+            INNER JOIN register r ON r.course_id=c.course_id 
+            LEFT JOIN booking b ON b.schedule_id=s.schedule_id AND r.user_id=b.user_id
+            WHERE s.date < CURDATE() AND s.course_id='{$courseID}' ";
+
+          $query= $app->db->prepare($sql);
+            $query->execute();
+            $studentsInClass = $query->fetchAll(PDO::FETCH_ASSOC);
+            // echo '<pre>';print_r($studentsInClass);echo '</pre>';exit;
+        foreach ($studentsInClass as $key => $value) {
+           
+           $studentNotStudy =  $value['booking_status'] !='Study';
+           $studentNotBooking = empty($value['booking_id']);
+           $studentNotStudyAndTeacherNotChecked =$value['booking_status']!='NotStudy';
+           $studentBookingButNotStudy = $value['booking_status']=='Reserved';
+            if($studentNotStudy && $studentNotStudyAndTeacherNotChecked)
+            {
+                if($studentNotBooking)
+                {
+                    $sql="INSERT INTO booking (user_id,schedule_id,booking_status) VALUES
+                    (:userID,:scheduleID,'NotStudy')";
+                }
+                if($studentBookingButNotStudy)
+                {
+                    $sql="UPDATE booking SET booking_status='NotStudy' WHERE user_id=:userID AND schedule_id=:scheduleID";
+                }
+                  echo $sql.'<hr>';
+                $query = $app->db->prepare( $sql );
+                $query->bindParam(':userID'    , $value['user_id']);
+                $query->bindParam(':scheduleID', $value['schedule_id']);
+                $query->execute();
+                // echo '<pre>';print_r($query->errorInfo());echo '</pre>';
+            }
+
+        }
+
         $courseClass->getStudentsInCourse(array(
             'courseID' => $courseID,
             'courseType' => 'Live'
@@ -1587,6 +1627,7 @@ session_start();
         $courseClass->setStudentsInCourse(array(
             'courseType' => 'Live'
         ));
+
         $app->render('admin/teacherStudentSchedule.php',array(
             'course'     => $courseClass->course,
             'courseID'   => $courseID,

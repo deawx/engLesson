@@ -22,8 +22,10 @@
                             Start :   <?=$schedule['start_time']?>
                             End :     <?=$schedule['end_time']?> 
                             Teacher : <?=$schedule['firstname'].' '.$schedule['lastname']?>
+                            <?php if($schedule['incoming_schedule']) : ?>
                             <a  href="manageScheduleData?scheduleID=<?=$scheduleID?>" class="btn btn-primary" role="button">แก้ไข</a>
                             <a  href="deleteSchedule?scheduleID=<?=$scheduleID?>" class="btn btn-danger" role="button">ลบ</a>
+                            <?php endif; ?>
                         </li>
                     <?php endif; ?>
                 <?php endforeach; ?>

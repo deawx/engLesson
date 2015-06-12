@@ -21,14 +21,21 @@
                 <tr>
                     <td><?=$course['name']?></td>
                     <?php foreach ($this->data->schedule as $scheduleID => $schedule) : 
+
                         $sumTotalSchedule++;
-                        $studentStudyThisClass = !empty( $this->data->booking[ $scheduleID ][ $userID ]['booking_id'] );
+                        $studentIsBooking = !empty( $this->data->booking[ $scheduleID ][ $userID ]['booking_id'] );
+                        $studentStudyThisClass = $studentIsBooking
+                         && $this->data->booking[ $scheduleID ][ $userID ]['booking_status']=='Study';
+                        $studentNotStudy = $studentIsBooking && $this->data->booking[ $scheduleID ][ $userID ]['booking_status']=='NotStudy';
                         if($studentStudyThisClass)
                             $sumStudentStudy ++;
+                       
                     ?>
                         <td class="text-center">
                             <?php if( $studentStudyThisClass ):?>
                                 <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                            <?php elseif( $studentNotStudy ):?>
+                                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                             <?php else : ?>
                                 <input type="checkbox" autocomplete="off" name="booking[<?=$scheduleID ?>][<?=$userID ?>]">
                             </div>
