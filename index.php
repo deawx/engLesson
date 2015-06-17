@@ -116,6 +116,7 @@ session_start();
 
     $app->get('/showRegisterList', 'showRegisterListForAdmin');
     $app->get('/showTeacherSchedule', 'showTeacherSchedule');
+    $app->get('/showTeacherList', 'showTeacherList');
     $app->get('/showStudentList/:courseID/:scheduleID', 'showStudentList');
     $app->get('/showStudentSchedule/:courseID', 'showStudentSchedule');
     $app->get('/showStudentVideoSchedule/:courseID', 'showStudentVideoSchedule');
@@ -130,6 +131,11 @@ session_start();
     $app->get('/deleteExam', 'deleteExam');
     $app->get('/contactUs', 'contactUs');
     $app->get('/sendMail', 'sendMail');
+    $app->get('/editTeacher', 'editTeacher');
+    $app->post('/editTeacher', 'editTeacherData');
+    $app->get('/addTeacher', 'addTeacher');
+    $app->post('/addTeacher', 'addTeacherData');
+    $app->get('/deleteTeacher', 'deleteTeacher');
 
     $app->get('/reportIncomeMain'  , 'reportIncomeMain');
     $app->get('/reportPopularMain' , 'reportPopularMain');
@@ -1584,7 +1590,7 @@ session_start();
             INNER JOIN course c ON c.course_id=s.course_id AND c.course_type='Live' 
             INNER JOIN register r ON r.course_id=c.course_id 
             LEFT JOIN booking b ON b.schedule_id=s.schedule_id AND r.user_id=b.user_id
-            WHERE s.date < CURDATE() AND s.course_id='{$courseID}' ";
+            WHERE YEARWEEK(s.date) < YEARWEEK( CURDATE() ) AND s.course_id='{$courseID}' ";
 
           $query= $app->db->prepare($sql);
             $query->execute();
@@ -1607,7 +1613,7 @@ session_start();
                 {
                     $sql="UPDATE booking SET booking_status='NotStudy' WHERE user_id=:userID AND schedule_id=:scheduleID";
                 }
-                  echo $sql.'<hr>';
+                  // echo $sql.'<hr>';
                 $query = $app->db->prepare( $sql );
                 $query->bindParam(':userID'    , $value['user_id']);
                 $query->bindParam(':scheduleID', $value['schedule_id']);
@@ -1627,7 +1633,7 @@ session_start();
         $courseClass->setStudentsInCourse(array(
             'courseType' => 'Live'
         ));
-
+// echo $courseClass->sql;
         $app->render('admin/teacherStudentSchedule.php',array(
             'course'     => $courseClass->course,
             'courseID'   => $courseID,
@@ -1953,6 +1959,115 @@ session_start();
     {
          $app = Slim::getInstance();
         $courseClass= new Course($app->db);
+    }
+    function showTeacherList()
+    {
+         $app = Slim::getInstance();
+         $userClass = new User($app->db);
+         $userClass->userType = 'user';
+         $userClass->getTeacherList();
+        $app->render('admin/teacherList.php',array(
+            'teacher' => $userClass->user
+        ));
+
+    }
+    function editTeacher()
+    {
+        $app = Slim::getInstance();
+         $userClass = new User($app->db);
+         $userClass->userType = 'user';
+         $userClass->userID = $_GET['userID'];
+         $userClass->getUserData();
+         $teacher = $userClass->user;
+
+        $app->render('admin/teacherEdit.php',array(
+            'action' => 'editTeacher',
+            'userID' => $_GET['userID'],
+            'teacher'=> $teacher
+        ));
+    }
+    function addTeacher()
+    {
+        $app = Slim::getInstance();
+        $teacher =array(
+            'username'  => '',
+            'lastname'  => '',
+            'password'  => '',
+            'firstname' => '',
+            'lastname'  => '',
+            'email'     => '',
+            'mobile'    => ''
+        );
+        $app->render('admin/teacherEdit.php',array(
+            'action'  => 'addTeacher',
+            'teacher' => $teacher
+        ));
+    }
+    function deleteTeacher()
+    {
+         $app = Slim::getInstance(); 
+         $sql="DELETE FROM user WHERE user_id='{$_GET['userID']}'";
+        $query = $app->db->prepare( $sql );
+        $query->execute();
+        $app->redirect('/engLesson/showTeacherList');  
+    }
+    function addTeacherData()
+    {
+        $app = Slim::getInstance(); 
+          $userClass = new User($app->db);
+        $userID = $userClass->getNewUserID();
+          $sql="INSERT INTO user (user_id,username,password,firstname,lastname,email,mobile,user_type,create_date) VALUES (
+                    :userID ,
+                    :username ,
+                    md5(:password) ,
+                    :firstname,
+                    :lastname,
+                    :email,
+                    :mobile ,
+                    'Teacher',CURDATE() )";
+        $query = $app->db->prepare( $sql );
+        $query->bindParam(':userID', $userID);
+        $query->bindParam(':username', $_POST['username']);
+        $query->bindParam(':password', $_POST['password']);
+        $query->bindParam(':firstname', $_POST['firstname']);
+        $query->bindParam(':lastname', $_POST['lastname']);
+        $query->bindParam(':email', $_POST['email']);
+        $query->bindParam(':mobile', $_POST['mobile']);
+        
+      
+        $query->execute();
+        $app->redirect('/engLesson/showTeacherList');  
+    }
+    function editTeacherData()
+    {
+        $app = Slim::getInstance(); 
+           $sql="UPDATE user SET
+                    username=:username ,
+                   
+                    firstname=:firstname,
+                    lastname=:lastname,
+                    email=:email,
+                    mobile=:mobile 
+            WHERE user_id=:userID  ";
+        $query = $app->db->prepare( $sql );
+        $query->bindParam(':username', $_POST['username']);
+        $query->bindParam(':firstname', $_POST['firstname']);
+        $query->bindParam(':lastname', $_POST['lastname']);
+        $query->bindParam(':email', $_POST['email']);
+        $query->bindParam(':mobile', $_POST['mobile']);
+        $query->bindParam(':userID', $_POST['userID']);
+        
+        $query->execute();
+        // echo '<pre>';print_r($query->errorInfo());echo '</pre>';exit;
+        if(!empty($_POST['password']))
+        {
+            $sqlPassword="UPDATE user SET  password=md5(:password)  WHERE user_id=:userID  )";
+            $queryPassword = $app->db->prepare( $sqlPassword );
+            $queryPassword->bindParam(':password', $_POST['password']);
+            $queryPassword->bindParam(':userID', $_POST['userID']);
+             $queryPassword->execute();
+        }
+        $app->redirect('/engLesson/showTeacherList'); 
     }
 
 

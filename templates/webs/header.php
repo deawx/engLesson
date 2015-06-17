@@ -82,6 +82,8 @@
                           <a href="/engLesson/showExamList"><span class="glyphicon glyphicon-send"> </span> ข้อมูลแบบทดสอบ</a></li>
                         <li  class="<?=($request =='showRegisterList')? 'active':'' ;?>">
                           <a href="/engLesson/showRegisterList"><span class="glyphicon glyphicon-send"> </span> ข้อมูลการจ่ายเงิน</a></li>
+                         <li  class="<?=($request =='showTeacherList')? 'active':'' ;?>">
+                          <a href="/engLesson/showTeacherList"><span class="glyphicon glyphicon-send"> </span> ข้อมูลผู้สอน</a></li>
                          <?php if($_SESSION['userDetail']['user_type'] == 'Admin'):?>
                          <li  class="<?=($request =='showStudentVideo')? 'active':'' ;?>">
                           <a href="/engLesson/showStudentVideo"><span class="glyphicon glyphicon-send"> </span>ข้อมูลการเข้าเรียนคอร์สวีดีโอ</a></li>

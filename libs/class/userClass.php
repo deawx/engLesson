@@ -18,6 +18,14 @@
             if( !empty( $session['loginUser'] ) || !empty( $session['loginUser'] ))
                 $this->getUserData();
         }
+        public function getNewUserID()
+        {
+            $sql="SELECT MAX(user_id)+1 NewID FROM user ";
+             $query= $this->connect->prepare($this->sql);
+            $query->execute();
+            $data = $query->fetch(PDO::FETCH_ASSOC);
+            return $data['NewID'];
+        }
         public function getUserData()
         {
             $this->sql="SELECT * FROM {$this->userType} WHERE user_id='{$this->userID}'";
