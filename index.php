@@ -1943,8 +1943,9 @@ session_start();
 
           $_GET['scheduleDate']= Utility::toMysqlDate( $_GET['scheduleDate'] );
         $courseClass= new Course($app->db);
-        // $canInsertSchdule = $courseClass->checkScheduleTime( $_GET );
-        $canInsertSchdule = $courseClass->checkPresentScheduleDate( $_GET );
+        $canInsertSchduleThisTime = $courseClass->checkScheduleTime( $_GET );
+        $canInsertSchduleThisDay  = $courseClass->checkPresentScheduleDate( $_GET );
+        $canInsertSchdule = $canInsertSchduleThisTime && $canInsertSchduleThisDay;
         if($canInsertSchdule)
             echo 'can';
         else
