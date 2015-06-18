@@ -1943,7 +1943,8 @@ session_start();
 
           $_GET['scheduleDate']= Utility::toMysqlDate( $_GET['scheduleDate'] );
         $courseClass= new Course($app->db);
-        $canInsertSchdule = $courseClass->checkScheduleTime( $_GET );
+        // $canInsertSchdule = $courseClass->checkScheduleTime( $_GET );
+        $canInsertSchdule = $courseClass->checkPresentScheduleDate( $_GET );
         if($canInsertSchdule)
             echo 'can';
         else
@@ -2036,6 +2037,7 @@ session_start();
         
       
         $query->execute();
+        echo '<pre>';print_r($query->errorInfo());echo '</pre>';exit;
         $app->redirect('/engLesson/showTeacherList');  
     }
     function editTeacherData()

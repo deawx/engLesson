@@ -702,6 +702,11 @@
             $teacherCanLessonThisTime = $count['count'] ==0;
             return  $teacherCanLessonThisTime;
         }
+        public function checkPresentScheduleDate($data)
+        {
+            $canInsertSchedule = $data['scheduleDate'] > date('Y-m-d');
+            return $canInsertSchedule;
+        }
         public function getStudentStudy()
         {
             $this->sql="";
