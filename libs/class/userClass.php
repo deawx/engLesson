@@ -21,7 +21,7 @@
         public function getNewUserID()
         {
             $sql="SELECT MAX(user_id)+1 NewID FROM user ";
-             $query= $this->connect->prepare($this->sql);
+             $query= $this->connect->prepare($sql);
             $query->execute();
             $data = $query->fetch(PDO::FETCH_ASSOC);
             return $data['NewID'];

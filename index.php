@@ -2037,7 +2037,6 @@ session_start();
         
       
         $query->execute();
-        echo '<pre>';print_r($query->errorInfo());echo '</pre>';exit;
         $app->redirect('/engLesson/showTeacherList');  
     }
     function editTeacherData()
