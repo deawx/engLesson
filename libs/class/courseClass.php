@@ -101,7 +101,7 @@
            c.max_seat - SuM(
 
     IF(rr.register_id IS NULL, 0, 1)
-    ) course_remain_seat
+    ) course_remain_seat , IF(  CURDATE() < DATE_ADD(c.start_date, INTERVAL 14 DAY)  ,1 ,'') can_register
                             {$this->from} 
                             {$this->join} AND r.user_id='{$filter['userID']}'  
                             LEFT JOIN register rr ON rr.course_id = c.course_id
@@ -145,6 +145,7 @@
                 $data[ $courseType ][ $index ]['end_date']    = $value['end_date'];
                 $data[ $courseType ][ $index ]['price']       = $value['price'];
                 $data[ $courseType ][ $index ]['level']       = $value['level'];
+                $data[ $courseType ][ $index ]['can_register']       = $value['can_register'];
             }
             $this->course = $data;
         }
