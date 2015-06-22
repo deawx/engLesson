@@ -708,6 +708,11 @@
             $canInsertSchedule = $data['scheduleDate'] > date('Y-m-d');
             return $canInsertSchedule;
         }
+        public function checkPresentCourseDate($data)
+        {
+            $canInsertSchedule = $data['startDate'] > date('Y-m-d');
+            return $canInsertSchedule;
+        }
         public function getStudentStudy()
         {
             $this->sql="";

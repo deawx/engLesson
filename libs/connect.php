@@ -4,7 +4,7 @@
     $dbhost = '127.0.0.1';
     $dbuser = 'root';
     $dbpass = '';
-    $dbname = "eng-lesson";
+    $dbname = "eng-lesson2";
 
     $dbClass = new DBConnect($dbhost,$dbuser,$dbpass,$dbname);
     $db      = $dbClass->connect;

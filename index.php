@@ -152,6 +152,7 @@ session_start();
     $app->post('/addMainCourse', 'addMainCourse');
     $app->post('/checkStudentUgly', 'checkStudentUgly');
     $app->get('/checkScheduleTime', 'checkScheduleTime');
+    $app->get('/checkCourseDate', 'checkCourseDate');
 
     $app->run(); 
     function home($username='')
@@ -1004,6 +1005,7 @@ session_start();
     {
         $app       = Slim::getInstance();
         $startDate = Utility::toMysqlDate( $_POST['startDate'] );
+       
         $endDate   = Utility::toMysqlDate( $_POST['endDate'] );
         $sql="UPDATE course SET course_name=:courseName,course_type=:courseType,max_seat=:maxSeat,
                 start_date=:startDate,end_date=:endDate,price=:price,level=:level 
@@ -1016,8 +1018,9 @@ session_start();
         $query->bindParam(':endDate',    $endDate);
         $query->bindParam(':price',      $_POST['price']);
         $query->bindParam(':level',      $_POST['level']);
-        $query->bindParam(':courseID',      $_POST['level']);
+        $query->bindParam(':courseID',      $_POST['courseID']);
         $query->execute();
+        // echo '<pre>';print_r($query->errorInfo() );echo '</pre>';exit;
         $app->redirect('../engLesson/adminCourse');
     }
     function showMainCourseList()
@@ -2070,5 +2073,18 @@ session_start();
         }
         $app->redirect('/engLesson/showTeacherList'); 
     }
+    function checkCourseDate()
+    {
+           $app = Slim::getInstance();
 
+          $_GET['startDate']= Utility::toMysqlDate( $_GET['startDate'] );
+        $courseClass= new Course($app->db);
+       
+        $canInsertSchduleThisDay  = $courseClass->checkPresentCourseDate( $_GET );
+     
+        if($canInsertSchduleThisDay)
+            echo 'can';
+        else
+            echo 'cannot';
+    }
 

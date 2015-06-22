@@ -1,6 +1,6 @@
 <?php include('/../webs/header.php'); ?>
 <h2>จัดการคอร์สเรียน</h2><br>
-    <form class="form-horizontal" action="<?=$this->data->action?>" method="post">
+    <form id="course-form" class="form-horizontal" action="<?=$this->data->action?>" method="post" onsubmit="return checkCourseDate()">
       <div class="form-group">
         <label for="courseName" class="col-md-2">ชื่อคอร์ส</label>
         <div class="col-md-4">
@@ -70,5 +70,27 @@
   $(".date-pick").datepicker({
     format : 'dd/mm/yyyy'
   });
+   function checkCourseDate()
+  {
+    var succeed =false;
+    var postData = $('#course-form').serialize();
+
+     $.ajax({
+      async: false,
+      url: 'checkCourseDate',
+      type: 'GET',
+      data: postData,
+    })
+    .done(function(msg) {
+      if(msg == 'can')
+          succeed= true;
+      else if(msg == 'cannot')
+      {
+          succeed= false;
+          alert('ไม่สามารถลงคอร์สเรียนเวลานี้ได้');
+      }
+    });
+    return succeed;
+  }
 </script>
    
