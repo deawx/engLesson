@@ -2043,7 +2043,6 @@ session_start();
         $app = Slim::getInstance(); 
            $sql="UPDATE user SET
                     username=:username ,
-                   
                     firstname=:firstname,
                     lastname=:lastname,
                     email=:email,

@@ -3,6 +3,7 @@
   <div class="col-md-12">
       <?php foreach ($this->data->courseType as $courseType => $typeName): ?>
         <h2>สมัครเรียน<?=$typeName?></h2>
+        <?php if( !empty($this->data->course[$courseType])  ):?>
         <?php  foreach ($this->data->course[$courseType] as $index => $courseLive): ?>
           <div class="panel panel-default">
             <div class="panel-heading">
@@ -23,6 +24,7 @@
             </div>
           </div>
         <?php endforeach; ?>
+        <?php endif;?>
       <?php endforeach; ?>
   </div>
 </div>
