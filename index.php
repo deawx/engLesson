@@ -1,16 +1,8 @@
 <?php 
- ini_set('display_errors', 1);
- error_reporting(E_ALL);
-
-// error_reporting( error_reporting() & ~E_NOTICE );
-
 session_start();
-// if(!isset($_SESSION['loginUser']))
-//     $_SESSION['loginUser']='';
     require_once 'libs/connect.php';
     require_once 'libs/utility.php';
     require_once 'libs/Slim/Slim/Slim.php';
-    // require_once 'libs/Slim-1.6.7/Slim.php';
     require_once 'libs/class/courseClass.php';
     require_once 'libs/class/userClass.php';
     require_once 'libs/class/examClass.php';
@@ -19,9 +11,6 @@ session_start();
     require_once 'libs/PHPMailer/PHPMailerAutoload.php';
 
     use \Slim\Slim;
-// $loader = new Slim();
-// $loader->register();
-
     Slim::registerAutoloader();
     $app = new Slim();
     //database connect
@@ -51,14 +40,12 @@ session_start();
     $app->get('/signInPretest', 'signInPretest');
     $app->get('/logout', 'logout');
 
-
     $app->post('/login', 'login');
     $app->post('/signUpPretestExam', 'signUpPretestExam');
     $app->post('/checkPretestScore', 'checkPretestScore');
     $app->post('/pretest', 'checkPretestExam');
     $app->post('/posttest', 'checkPosttestExam');
    
-
     $app->get('/examList', 'examList');
     $app->get('/room', 'showRoom');
     $app->get('/roomLive', 'showRoomLive');
@@ -142,7 +129,6 @@ session_start();
     $app->get('/reportPostExamMain', 'reportPostExamMain');
 
      $app->get('/reportIncomeData'  , 'reportIncomeData');
-
 
     $app->get('/updatePaymentStatus/:registerID/:status', 'updatePaymentStatus');
 
